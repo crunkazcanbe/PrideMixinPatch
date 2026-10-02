@@ -1,0 +1,44 @@
+// CNPCsEarlyMixin — tiny Cleanroom coremod that forces Custom NPCs' mixin config
+// (customnpcs.mixins.json) to load EARLY via MixinBooter's IEarlyMixinLoader, so its
+// EntityMixin applies to net.minecraft.entity.Entity before HBM's coremod loads it.
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+
+version = '1.0.0'
+group = 'com.dogpound.mixinpatch'
+archivesBaseName = 'PrideMixinPatch-1.12.2'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
+minecraft {
+    mappings channel: 'snapshot', version: '20171003-1.12'
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
+    // MixinBooter API (IEarlyMixinLoader) — provided at runtime by Cleanroom
+    compileOnly files('libs/mixinbooter-api.jar')
+}
+
+jar {
+    manifest {
+        attributes([
+            'FMLCorePlugin'                  : 'com.dogpound.mixinpatch.DogPoundMixinPatch',
+            'FMLCorePluginContainsFMLMod'    : 'false',
+            'ForceLoadAsMod'                 : 'false'
+        ])
+    }
+}
+
+jar.finalizedBy('reobfJar')
